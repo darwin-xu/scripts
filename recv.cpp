@@ -34,13 +34,17 @@ int main(int argc, char *argv[])
 		}
 
 		int sk1;
-		if ((sk1 = accept()) == -1)
+		sockaddr skaddr;
+		socklen_t skaddrlen;
+		if ((sk1 = accept(sk, &skaddr, &skaddrlen)) == -1)
 		{
 			printf("%s\n", strerror(errno));
 			return errno;
 		}
 
-		
+		char buf[2048];
+
+		while (recv(sk1, buf, 2048, 0) >= 0);
 	}
 
 	return 0;
