@@ -19,7 +19,7 @@ if [ -f $dstPath ]; then
 
 	if [ "$srcMd5"x = "$dstMd5"x ]; then
 		# Source and target is the same, remove source.
-		echo "Remove identical file: $2"
+		echo "Remove identical file : $2"
 		rm -f $2
 	else
 		# Source and target is different, rename
@@ -27,19 +27,19 @@ if [ -f $dstPath ]; then
 		for i in {1..100}
 		do
 			if [ ! -f "${dstPath}_${i}" ]; then
-				echo "File with same name exist, rename to: ${dstPath}_${i}"
+				echo "Same name, rename to  : ${dstPath}_${i}"
 				mv $2 ${dstPath}_${i}
 				moved=true
 				break
 			fi
 		done
 		if [ $moved = false ]; then
-			echo "Failed to move file:$2"
+			echo "Failed to move file   : $2"
 		fi
 	fi
 else
 	# Target file doesn't exist, move to.
-	echo "Move file to: $dstPath"
+	echo "Move file to          : $dstPath"
 	mkdir -p $dstDir
 	mv $2 $dstDir
 fi
