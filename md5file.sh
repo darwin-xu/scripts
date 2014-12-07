@@ -12,5 +12,5 @@ md5Dir=`dirname "$md5Path"`
 if [ "$2" -nt "$md5Path" ]; then
 	mkdir -p "$md5Dir"
 	md5Value=`md5 -q "$2" | awk '{print $1}'`
-	echo "$md5Value - $2" >> "$md5Path"
+	echo "$md5Value;$2" >> "$md5Path"
 fi

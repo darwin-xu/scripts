@@ -4,8 +4,9 @@
 
 if [ "$1"x = "--clean"x ]; then
 	rm -rf .md5
-	rm -rf .md5table
-	rm -rf .md5tablesort
+	rm -f .md5table
+	rm -f .md5tablesort
+	rm -f rmfilelist
 	exit
 fi
 
@@ -29,12 +30,13 @@ rm .md5table
 
 while read line; do
 	# Get the md5 value
-	md5v=`echo $line | awk '{print $1}'`
-	file=`echo $line | awk '{print $3}'`
+	md5v=`echo $line | awk -F\; '{print $1}'`
+	file=`echo $line | awk -F\; '{print $2}'`
 
 	# Print out the duplicated file
 	if [ "$lastMd5v"x = "$md5v"x ]; then
 		echo "Find dup file : [$lastFile] <-> [$file]"
+		echo "rm $lastFile" >> rmfilelist
 	fi
 
 	# Save for the last
