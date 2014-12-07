@@ -13,6 +13,12 @@ fi
 # Get the path of the script.
 scriptPath=`dirname $0`
 
+# Check if the `pwd` starts with $1, this means it can cause recursive scan and leads to infinate loop.
+if [[ `pwd` == $1* ]]; then
+	echo "Do not search the directory contains current directory!!!"
+	exit
+fi
+
 # Calculate the md5 of files
 echo "1) Calculate the md5 of files..."
 find "$1" -type f -exec $scriptPath/md5file.sh "$1" {} .md5 \;
