@@ -33,6 +33,12 @@ function processMd5 {
 	rm .md5table
 	totalLine=`cat .md5tablesort | wc -l |awk '{print $1}'`
 
+	# Remove last file list.
+	rm -f partlist
+	rm -f rmfilelist
+	rm -f lsfilelist
+	rm -f .szfileList
+
 	# Print duplicate files
 	echo "4) Print duplicate files..."
 	cur=0
@@ -50,9 +56,12 @@ function processMd5 {
 		if [ "$lastMd5v"x = "$md5v"x ]; then
 			echo
 			echo "Find dup file : [$lastFile] <-> [$file]"
+			echo "[$lastFile] <-> [$file]" >> partlist
 			echo "rm \"$lastFile\"" >> rmfilelist
-			rmSize=`stat -f "%z" "$lastFile"`
-			totalSize=$((totalSize+rmSize))
+			echo "ls -lah \"$lastFile\"" >> lsfilelist
+			fileSize=`stat -f "%z" "$lastFile"`
+			echo "$fileSize $lastFile" >> .szfileList
+			totalSize=$((totalSize+fileSize))
 		fi
 
 		# Save for the last
@@ -60,9 +69,17 @@ function processMd5 {
 		lastFile=$file
 	done < .md5tablesort
 
+	sort -nr .szfileList > szfileList
+	rm .szfileList
+
 	echo
-	echo "5) Please check file : rmfilelist"
-	echo "Total size of dup files : $(printf %\'d $totalSize) bytes"
+	echo "5) Please check file list of pair : pairlist"
+	echo "   Please check file list of rm   : rmfilelist"
+	echo "   Please check file list of ls   : lsfilelist"
+	echo "   Please check file list of size : szfileList"
+	echo
+	echo "Total size of dup files : $(printf %\'d $totalSize)B"
+	echo
 }
 
 # Check if the `pwd` starts with $1, this means it can cause recursive scan and leads to infinate loop.
