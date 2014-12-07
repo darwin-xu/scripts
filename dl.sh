@@ -6,10 +6,12 @@ fileName=`echo $1 | awk -F/ '{print $NF}'`
 # Default download blocks is 4.
 blocks="4"
 
-# If 2 parameters or more.
-if [ "$#" > 1 ]; then
+# If parameters number is 2.
+if [ "$#" = 2 ]; then
 	blocks=$2
 fi
+
+exit
 
 echo "Try to download $1..."
 
