@@ -6,7 +6,6 @@
 
 function generateMd5 {
 	totalFile=`find $1 -type f | wc -l | awk '{print $1}'`
-	selfName=`basename $0`
 	echo "${totalFile} 0" > "$tmpFilename"
 
 	# Get the path of the script.
@@ -96,6 +95,7 @@ if [ "$1"x = "--clean"x ]; then
 	exit
 fi
 
+selfName=`basename $0`
 tmpFilename=`echo "/tmp/${selfName}.$$.tmp"`
 
 if [ "$1"x = "--noscan"x ]; then
