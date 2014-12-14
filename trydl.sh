@@ -18,7 +18,9 @@ while true; do
 		break
 	fi
 
-	if [[ ($retry == true && $downSize > 100000) ]]; then
+	forknumber=`ls $5/*.pid | wc -l | awk '{print $0}' `
+
+	if [[ ($retry == true && $forknumber < 300) ]]; then
 		echo "trydl $1 - $2"
 		"$scriptPath/splitdl.sh" "$1" "$2" "$3" "$4" 2 "$5"
 	else

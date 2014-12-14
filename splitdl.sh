@@ -30,8 +30,9 @@ do
 	wait %$(( i + 1 ))
 done
 
-echo "---"$4
-
 cat $6/$$_???.tmp > "$4"
 
+echo "($1-$2):$4 finished"
+
 rm $6/$$_???.tmp
+rm $6/trydl_$$.pid
