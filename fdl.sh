@@ -10,4 +10,5 @@ dlSize=`curl -sI $1 | grep Content-Length | awk -F '[ \r]' '{print $2}'`
 
 # Call splitdl.sh
 scriptPath=`dirname $0`
-$scriptPath/splitdl.sh 0 $dlSize $1 "$fileName" .$$
+mkdir $$
+$scriptPath/splitdl.sh 0 $dlSize $1 "$fileName" 10 $$

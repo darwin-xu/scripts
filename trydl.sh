@@ -19,12 +19,14 @@ while true; do
 	fi
 
 	if [[ ($retry == true && $downSize > 100000) ]]; then
-		"$scriptPath/splitdl.sh" "$1" "$2" "$3" "$4" "$5"
+		echo "trydl $1 - $2"
+		"$scriptPath/splitdl.sh" "$1" "$2" "$3" "$4" 2 "$5"
 	else
 		if [ $retry == true ]; then
-			echo "retry: $(printf %16 $1) - $(printf %16 $2)"
+			echo "retry: $(printf %16d $1) - $(printf %16d $2)"
 		fi
-		curl -s -r $1-$2 "$3" -o "$4"
+		curl -Y 1000 -y 10 -s -r $1-$2 "$3" -o "$4"
 	fi
 	retry=true
+	sleep 1
 done

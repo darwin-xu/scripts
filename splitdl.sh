@@ -4,34 +4,32 @@
 # $2 download end range
 # $3 URL of download file
 # $4 target file name
-# $5 the folder to store the tmp files
-
-# No more than 99
-blocks=10
+# $5 blocks number
+# $6 the folder to store the tmp files
 
 dlSize=$(( $2 - $1 + 1 ))
-blSize=$(( dlSize / block ))
+blSize=$(( dlSize / $5 ))
 
 scriptPath=`dirname $0`
-for (( i = 0; i < blocks; i++ ))
+for (( i = 0; i < $5; i++ ))
 do
-	bPos=$(( i * blSize ))
-	ePos=$(( (i + 1) * blSize - 1 ))
-	if [ $i = $(( blocks - 1 )) ]; then
-		ePos=$blSize
+	bPos=$(( i * blSize + $1 ))
+	ePos=$(( (i + 1) * blSize + $1 - 1 ))
+	if [ $i = $(( $5 - 1 )) ]; then
+		ePos=$2
 	fi
 
-	# call trydl in background.
-	echo "split: $(printf %16 $bPos) - $(printf %16 $ePos)"
-	$scriptPath/trydl.sh $bPos $ePos "$3" "$5/$$_$(printf %03d $i).tmp" &
-	echo $! >> "$5/trydl_$$.pid"
+	# call trydl.sh in background.
+	echo "split: $(printf %16d $bPos) - $(printf %16d $ePos)"
+	$scriptPath/trydl.sh $bPos $ePos "$3" "$6/$$_$(printf %03d $i).tmp" "$6" &
+	echo $! >> "$6/trydl_$$.pid"
 done
 
-for (( i = 0; i < blocks; i++ ))
+for (( i = 0; i < $5; i++ ))
 do
 	wait %$(( i + 1 ))
 done
 
-cat "$5/$$_???.tmp" > "$4"
+cat "$6/$$_???.tmp" > "$4"
 
-rm "$5/$$_???.tmp"
+rm "$6/$$_???.tmp"
