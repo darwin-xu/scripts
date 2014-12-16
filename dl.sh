@@ -11,8 +11,6 @@ if [ "$#" = 2 ]; then
 	blocks=$2
 fi
 
-exit
-
 echo "Try to download $1..."
 
 # Get the file size from the http header "Content-Length", use whitespace and '\r' as the separator.
@@ -22,6 +20,9 @@ dlSize=`curl -sI $1 | grep Content-Length | awk -F '[ \r]' '{print $2}'`
 echo "Total size is : $dlSize"
 blockSize=$((dlSize / blocks))
 
+scriptPath=`dirname $0`
+
+rm -f .bkpid
 for (( i = 0; i < blocks; i++ ))
 do
 	# Block begin position.
@@ -34,9 +35,11 @@ do
 	fi
 
 	# Create a .{pid}_000n.tmp temporary file.
-	cmd="curl -s -r $b-$e $1 -o .$$_$(printf %04d $i).tmp"
+	#cmd="curl -s -r $b-$e $1 -o .$$_$(printf %04d $i).tmp"
+	cmd="$scriptPath/safedl.sh $b $e $1 .$$_$(printf %04d $i).tmp"
 	echo "$i: $cmd"
 	$cmd &
+	$! >> .bkpid
 done
 
 for (( i = 0; i < blocks; i++ ))

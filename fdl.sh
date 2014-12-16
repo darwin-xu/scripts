@@ -11,4 +11,10 @@ dlSize=`curl -sI $1 | grep Content-Length | awk -F '[ \r]' '{print $2}'`
 # Call splitdl.sh
 scriptPath=`dirname $0`
 mkdir $$
-$scriptPath/splitdl.sh 0 $((dlSize - 1)) $1 "$fileName" 100 $$
+$scriptPath/splitdl.sh 0 $((dlSize - 1)) $1 "$fileName" 30 $$ &
+
+while [[ ! -f fileName ]]; do
+	curSize=`ls -l $$/*.tmp | awk '{t+=$5} END {print t}'`
+	printf "[$(printf %3d $((curSize*100/dlSize)))%%]\r"
+	sleep 1
+done
