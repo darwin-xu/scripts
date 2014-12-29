@@ -2,7 +2,8 @@
 
 # Move the file to date folder
 # $1 the file need to be move
-# $2 the destination folder.
+# $2 the destination folder
+# $3 is this the dry run
 
 # Use what time stamp?
 # If all the timestamp is the same, use it.
@@ -44,6 +45,10 @@ END {
 
 orig=`dirname "${1#$2}"`
 if [[ ( $dest"x" != "x" ) && ( $dest"x" != $orig"x" ) ]]; then
-	mkdir -p "$2/$dest"
-	mv -vn "$1" "$2/$dest"
+	if [[ $3 = true ]]; then
+		echo "dry: $1 -> $2/$dest"
+	else
+		mkdir -p "$2/$dest"
+		mv -vn "$1" "$2/$dest"
+	fi
 fi

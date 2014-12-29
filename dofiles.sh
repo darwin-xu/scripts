@@ -7,16 +7,29 @@
 
 scriptPath=`dirname $0`
 
-if [[ $# -ge 2 ]]; then
-	dest=$2
-else
-	dest=$1
-fi
+dry=false
 
-#find $1 -iname "$filter" -type f 
+for var in "$@"
+do
+	if [[ $var"x" = "-dryx" ]]; then
+		dry=true
+	elif [[ $sour"x" = "x" ]]; then
+		sour=$var
+	elif [[ $dest"x" = "x" ]]; then
+		dest=$var
+	elif [[ $filter"x" = "x" ]]; then
+		filter=$var
+	fi
+done
 
-if [[ $3"x" != "x" ]]; then
-	find -E $1 -iregex $3 -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" \;
-else
-	find $1 -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" \;
+if [[ $sour"x" != "x" ]]; then
+	if [[ $dest"x" = "x" ]]; then
+		dest=$sour
+	fi
+
+	if [[ $filter"x" != "x" ]]; then
+		find -E $sour -iregex $filter -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
+	else
+		find $sour -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
+	fi
 fi
