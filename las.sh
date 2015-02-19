@@ -15,6 +15,6 @@ find $1 -type f | awk ' {
 	}
 }
 END {
-	for (k in m)
-		print k, ":", m[k];
+ 	for (k in m)
+ 		print k, ":", m[k];
 }'

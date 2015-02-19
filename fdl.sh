@@ -2,7 +2,18 @@
 
 # $1 URL of the download file.
 
-curlResult=`curl -sI "$1" | awk '/Content-Length/ {sub(/Content-Length:[[:space:]]*/, ""); split($0, b, /\r/); dSize=b[1]} /Content-Disposition/ {sub(/Content-Disposition:/, ""); n=split($0, a, /;|\r/); for (i=1; i<=n; i++) { if (match(a[i], /filename=/)) {fname=sub(/filename=/,"",a[i]); fName=a[i]} } } END {print dSize, fName}'`
+curlResult=`curl -sI "$1" | awk '
+/Content-Length/ {sub(/Content-Length:[[:space:]]*/, ""); split($0, b, /\r/); dSize = b[1]}
+/Content-Disposition/ {sub(/Content-Disposition:/, ""); n = split($0, a, /;|\r/);
+	for (i = 1; i <= n; i++) {
+		if (match(a[i], /filename=/))
+			{fname=sub(/filename=/,"",a[i]);
+			fName=a[i]}
+	}
+}
+END {
+	print dSize, fName
+}'`
 
 dlSize=`echo $curlResult | awk '{print $1}'`
 fileName=`echo $curlResult | awk '{print $2}'`
@@ -11,8 +22,6 @@ fileName=`echo $curlResult | awk '{print $2}'`
 if [[ "$fileName"x = ""x ]]; then
 	fileName=`echo $1 | awk -F/ '{print $NF}'`
 fi
-
-echo "filename $fileName"
 
 # # Get the file size by send request.
 # dlSize=`curl -sI "$1" | grep Content-Length | awk -F '[ \r]' '{print $2}'`

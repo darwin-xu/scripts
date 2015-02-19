@@ -11,7 +11,10 @@ dry=false
 
 for var in "$@"
 do
-	if [[ $var"x" = "-dryx" ]]; then
+	if [[ $var"x" = "-hx" ]]; then
+		echo "$0 <source_folder> <dest_folder> [filter] [-dry]"
+		exit 0
+	elif [[ $var"x" = "-dryx" ]]; then
 		dry=true
 	elif [[ $sour"x" = "x" ]]; then
 		sour=$var
