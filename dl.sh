@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Use '/' as the separator, print the last part of the URL, it should be the file name.
 fileName=`echo $1 | awk -F/ '{print $NF}'`
 
