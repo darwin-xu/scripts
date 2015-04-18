@@ -22,7 +22,6 @@ do
 	# call trydl.sh in background.
 	# echo "split: $(printf %16d $bPos) - $(printf %16d $ePos)"
 	$scriptPath/trydl.sh $bPos $ePos "$3" "$6/$$_$(printf %03d $i).tmp" "$6" &
-	echo $! >> "$6/trydl_$$.pid"
 done
 
 for (( i = 0; i < $5; i++ ))
@@ -35,4 +34,3 @@ cat $6/$$_???.tmp > "$4"
 # echo "($1-$2):$4 finished"
 
 rm $6/$$_???.tmp
-rm $6/trydl_$$.pid

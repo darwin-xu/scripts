@@ -6,31 +6,44 @@
 # $4 target file name
 # $5 the folder to store the tmp files
 
+touch $$.pid
+
 scriptPath=`dirname $0`
-retry=false
-while true; do
+retryTime=0
+downSize=$(($2 - $1 + 1))
+while [[ $retryTime -lt 10 ]]; do
 	fileSize=0;
 	if [ -f "$4" ]; then
 		fileSize=`stat -f "%z" "$4"`
 	fi
-	downSize=$(($2 - $1 + 1))
-	if [[ ($fileSize == $downSize) ]]; then
+	if [[ $fileSize -eq $downSize ]]; then
 		break
 	else
 		rm -f $4
 	fi
 
-	forknumber=`ls $5/*.pid | wc -l | awk '{print $0}' `
+	processNumber=`find . -name "*.pid" | wc -l | awk '{print $0}'`
 
-	if [[ ($retry == true && $forknumber < 300) ]]; then
-		# echo "trydl $1 - $2"
+	if [[ ($retryTime -ne 0 && $processNumber < 50) ]]; then
 		"$scriptPath/splitdl.sh" "$1" "$2" "$3" "$4" 2 "$5"
 	else
-		# if [ $retry == true ]; then
-		# 	echo "retry: $(printf %16d $1) - $(printf %16d $2)"
-		# fi
 		curl -Y 1000 -y 10 -s -r $1-$2 "$3" -o "$4"
 	fi
-	retry=true
+	retryTime=$((retryTime + 1))
 	sleep 1
 done
+
+rm $$.pid
+
+fileSize=0
+if [ -f "$4" ]; then
+	fileSize=`stat -f "%z" "$4"`
+fi
+
+if [[ $fileSize -eq $downSize ]]; then
+	# 0 for success
+	exit 0
+else
+	# 1 for error
+	exit 1
+fi
