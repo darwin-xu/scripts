@@ -1,0 +1,7 @@
+1. Propagate the CTRL+C from process to main process to all child process.
+2. Use proper range to download the file [Begin-Range, End-Range)
+3. Prevent two many process.
+   Remove "$6/trydl_$$.pid"
+
+4. Avoid print useless message when waiting.
+5. Use "find" list the file and show the progress. 
