@@ -5,7 +5,8 @@
 
 find $1 -type f | awk ' 
 BEGIN {
-	maxLen = 0;
+	maxSuffixLen = 0;
+	maxLenLen = 0;
 }
 {
 	# Split the file by separator
@@ -20,15 +21,28 @@ BEGIN {
 	}
 	else {
 		suffix = "no suffix";
+		if (length(noSuffix) == 0) {
+			noSuffix = $0
+		}
+		else {
+			noSuffix = noSuffix "\n" $0
+		}
 	}
 	
 	suffixMap[suffix] += 1;
-	if (maxLen < length(suffix)) {
-		maxLen = length(suffix);
+	if (maxSuffixLen < length(suffix)) {
+		maxSuffixLen = length(suffix);
+	}
+
+	if (maxLenLen < length(suffixMap[suffix])) {
+		maxLenLen = length(suffixMap[suffix]);
 	}
 }
 END {
-	format = "%-" maxLen + 1 "s:%3d\n"
+	print "Files type statistics:"
+	format = "%-" maxSuffixLen + 1 "s:%" maxLenLen + 1 "d\n"
 	for (k in suffixMap)
 		printf format, k, suffixMap[k];
+	print "\nFiles without suffix:"
+	print noSuffix
 }'
