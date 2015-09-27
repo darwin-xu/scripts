@@ -47,22 +47,23 @@ END {
 
 if [[ $dest"x" != "x" ]]; then
 	# Get the filename from whole path
-	filename=`basename $1`
+	filename=`basename "$1"`
 
 	# Compose the destination path and remove the extra slash
+	sourPath=$(echo $1 | sed s#//*#/#g)
 	destPath=$(echo $2/$dest/$filename | sed s#//*#/#g)
 
 	# If the destination path is not the same, then move
-	if [[ $1 != $destPath ]]; then
+	if [[ sourPath != $destPath ]]; then
 
 		if [[ $3 = true ]]; then
-			echo "Dry: $1 -> $destPath"
+			echo "Dry: $sourPath -> $destPath"
 		else
 			mkdir -p `dirname $destPath`
-			mv -vn $1 $destPath
+			mv -vn "$sourPath" "$destPath"
 		fi
 
 	fi
 else
-	echo "Could not determine the path for $1"
+	echo "Could not determine the path for $sourPath"
 fi

@@ -3,7 +3,7 @@
 # This script used to list all suffixes in the folder
 # $1 The folder to search.
 
-find $1 -type f | awk ' 
+find "$1" -type f | awk ' 
 BEGIN {
 	maxSuffixLen = 0;
 	maxLenLen = 0;

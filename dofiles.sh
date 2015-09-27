@@ -14,7 +14,7 @@ do
 	if [[ $var"x" = "-hx" ]]; then
 		echo "$0 <source_folder> <dest_folder> [filter] [-dry]"
 		echo "Example: "
-		echo "dofiles.sh /Volumes/Vault/photo/2015 /Volumes/Vault/movie \".*mov\" -dry"
+		echo "dofiles.sh /Volumes/Vault/photo/2015 /Volumes/Vault/video \".*mov|.*mp4\" -dry"
 		exit 0
 	elif [[ $var"x" = "-dryx" ]]; then
 		dry=true
@@ -33,8 +33,8 @@ if [[ $sour"x" != "x" ]]; then
 	fi
 
 	if [[ $filter"x" != "x" ]]; then
-		find -E $sour -iregex $filter -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
+		find -E "$sour" -iregex $filter -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
 	else
-		find $sour -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
+		find "$sour" -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
 	fi
 fi
