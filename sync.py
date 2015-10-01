@@ -51,4 +51,8 @@ print "Total copied file: ", copyCount
 print "Total skipped file:", skipCount
 print "Total removed file:", removeCount
 endTime = time.time()
-print endTime - beginTime
+
+seconds = endTime - beginTime
+m, s = divmod(seconds, 60)
+h, m = divmod(m, 60)
+print "%d:%02d:%02d" % (h, m, s)
