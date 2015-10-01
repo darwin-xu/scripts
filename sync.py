@@ -17,13 +17,12 @@ def force_rmdir(dir) :
 
 def walk_dir(srcDir, dstDir, topdown = True) :
 	copyCount = 0
-	skipCount = 0
-	removeCount = 0
+	syncCount = 0
+	rmFileCount = 0
+	rmDirCount = 0
 	for root, srcDirs, srcFiles in os.walk(srcDir, topdown) :
-		# Skip all files start with '.'
 		if not os.path.basename(root).startswith('.') :
 
-			# Get the dest file path and files list.
 			dstPath = os.path.join(dstDir, os.path.relpath(root, srcDir))
 			if not os.path.isdir(dstPath) :
 				os.makedirs(dstPath)
@@ -45,7 +44,7 @@ def walk_dir(srcDir, dstDir, topdown = True) :
 						copyCount += 1
 					else :
 						#print "skip [" + srcFileName + "]"
-						skipCount += 1
+						syncCount += 1
 
 			for name in srcDirs :
 				try :
@@ -58,22 +57,23 @@ def walk_dir(srcDir, dstDir, topdown = True) :
 				if os.path.isfile(fileToRemove) :
 					print "remove file [" + fileToRemove + "]"
 					os.remove(fileToRemove)
-					removeCount += 1
+					rmFileCount += 1
 				else :
 					print "remove dir  [" + fileToRemove + "]"
 					force_rmdir(fileToRemove)
-					removeCount += 1
+					rmDirCount += 1
 
-	return copyCount, skipCount, removeCount
+	return copyCount, syncCount, rmFileCount, rmDirCount
 
 beginTime = time.time()
 script, srcDir, dstDir = argv
 
-copyCount, skipCount, removeCount = walk_dir(srcDir, dstDir)
+copyCount, syncCount, rmFileCount, rmDirCount = walk_dir(srcDir, dstDir)
 
-print "Total copied file: ", copyCount
-print "Total skipped file:", skipCount
-print "Total removed file:", removeCount
+print "Total copied files :", copyCount
+print "Total synced files :", syncCount
+print "Total removed files:", rmFileCount
+print "Total removed dirs :", rmDirCount
 endTime = time.time()
 
 seconds = endTime - beginTime
