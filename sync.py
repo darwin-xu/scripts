@@ -77,6 +77,9 @@ if len(argv) == 1 :
 	print 'Usage:'
 	print '\t', argv[0], '<source directory> <dest directory>'
 else :
+	args = ['caffeinate', '-w', str(os.getpid())]
+	os.spawnvp(os.P_NOWAIT, "caffeinate", args)
+	
 	beginTime = time.time()
 	script, srcDir, dstDir = argv
 
