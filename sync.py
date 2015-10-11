@@ -17,9 +17,10 @@ def force_rmdir(dir) :
 
 def walk_dir(srcDir, dstDir, topdown = True) :
 	copyCount = 0
-	syncCount = 0
+	skipCount = 0
 	rmFileCount = 0
 	rmDirCount = 0
+	maxlen = 0
 	for root, srcDirs, srcFiles in os.walk(srcDir, topdown) :
 		if not os.path.basename(root).startswith('.') :
 
@@ -43,8 +44,14 @@ def walk_dir(srcDir, dstDir, topdown = True) :
 						shutil.copy(srcFileName, dstFileName)
 						copyCount += 1
 					else :
-						#print "skip [" + srcFileName + "]"
-						syncCount += 1
+						skipCount += 1
+						s = "skip [" + srcFileName + "] (" + str(skipCount) + ")..."
+						if maxlen < len(s) :
+							maxlen = len(s)
+						else :
+							s += " " * (maxlen - len(s))
+						print s + '\r',
+
 
 			for name in srcDirs :
 				try :
@@ -52,31 +59,37 @@ def walk_dir(srcDir, dstDir, topdown = True) :
 				except :
 					pass
 
-			for name in dstFiles:
-				fileToRemove = os.path.join(dstPath, name)
-				if os.path.isfile(fileToRemove) :
-					print "remove file [" + fileToRemove + "]"
-					os.remove(fileToRemove)
-					rmFileCount += 1
-				else :
-					print "remove dir  [" + fileToRemove + "]"
-					force_rmdir(fileToRemove)
-					rmDirCount += 1
+			for name in dstFiles :
+				if not name.startswith('.') :
+					fileToRemove = os.path.join(dstPath, name)
+					if os.path.isfile(fileToRemove) :
+						print "remove file [" + fileToRemove + "]"
+						os.remove(fileToRemove)
+						rmFileCount += 1
+					else :
+						print "remove dir  [" + fileToRemove + "]"
+						force_rmdir(fileToRemove)
+						rmDirCount += 1
 
-	return copyCount, syncCount, rmFileCount, rmDirCount
+	return copyCount, skipCount, rmFileCount, rmDirCount
 
-beginTime = time.time()
-script, srcDir, dstDir = argv
+if len(argv) == 1 :
+	print 'Usage:'
+	print '\t', argv[0], '<source directory> <dest directory>'
+else :
+	beginTime = time.time()
+	script, srcDir, dstDir = argv
 
-copyCount, syncCount, rmFileCount, rmDirCount = walk_dir(srcDir, dstDir)
+	copyCount, skipCount, rmFileCount, rmDirCount = walk_dir(srcDir, dstDir)
 
-print "Total copied files :", copyCount
-print "Total synced files :", syncCount
-print "Total removed files:", rmFileCount
-print "Total removed dirs :", rmDirCount
-endTime = time.time()
+	print
+	print "Total copied files :", copyCount
+	print "Total skipped files:", skipCount
+	print "Total removed files:", rmFileCount
+	print "Total removed dirs :", rmDirCount
+	endTime = time.time()
 
-seconds = endTime - beginTime
-m, s = divmod(seconds, 60)
-h, m = divmod(m, 60)
-print "%d:%02d:%02d" % (h, m, s)
+	seconds = endTime - beginTime
+	m, s = divmod(seconds, 60)
+	h, m = divmod(m, 60)
+	print "Time spent %d:%02d:%02d" % (h, m, s)
