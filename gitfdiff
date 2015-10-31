@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# gitfdiff <commit> [commit] <file>
+
+if [ $# -eq 2 -o $# -eq 3 ]; then
+	if [ $# -eq 2 ]; then
+		commit1=$1
+		commit2=HEAD
+		file=$2
+	else
+		commit1=$1
+		commit2=$2
+		file=$3
+	fi
+	#echo $commit1, $commit2, $file
+	# step 1, get version 1
+	git show $commit1:$file > "$file"_d1
+	# step 2, get version 2
+	git show $commit2:$file > "$file"_d2
+	# step 3, format them
+	astyle -q "$file"_d1 "$file"_d2
+	# step 4, format version 2
+	diff "$file"_d1 "$file"_d2
+else
+	echo "Usage gitfdiff <commit> [commit] file"
+fi
