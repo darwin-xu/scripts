@@ -14,13 +14,21 @@ if [ $# -eq 2 -o $# -eq 3 ]; then
 	fi
 	#echo $commit1, $commit2, $file
 	# step 1, get version 1
-	git show $commit1:$file > "$file"_d1
-	# step 2, get version 2
-	git show $commit2:$file > "$file"_d2
-	# step 3, format them
-	astyle -q "$file"_d1 "$file"_d2
-	# step 4, format version 2
-	diff "$file"_d1 "$file"_d2
+	git show $commit1:$file > "$file"_d
+	# step 2, format it.
+	astyle -q "$file"_d
+	# step 3, add it to git temporarily.
+	git add "$file"_d
+	# step 4, get version 2
+	git show $commit2:$file > "$file"_d
+	# step 5, format it.
+	astyle -q "$file"_d
+	# step 6, use git diff
+	git diff "$file"_d
+	# step 7, reset
+	git reset -q "$file"_d
+	# remove the temp file
+	rm "$file"_d
 else
 	echo "Usage gitfdiff <commit> [commit] file"
 fi
