@@ -1,6 +1,17 @@
 #!/bin/bash
 
 # gitfdiff <commit> [commit] <file>
+formatTool=astyle
+formatArgu=-q
+
+check_exit() {
+	if [ ! $? -eq 0 ]; then
+		echo
+		echo $1
+		echo
+		exit
+	fi
+}
 
 if [ $# -eq 2 -o $# -eq 3 ]; then
 	if [ $# -eq 2 ]; then
@@ -15,20 +26,35 @@ if [ $# -eq 2 -o $# -eq 3 ]; then
 	#echo $commit1, $commit2, $file
 	# step 1, get version 1
 	git show $commit1:$file > "$file"_d
+	check_exit "Couldn't get the file in GIT, please check if the file name [$file] or commit [$commit1] is right."
+
 	# step 2, format it.
-	astyle -q "$file"_d
+	$formatTool $formatArgu "$file"_d
+	check_exit "Couldn't format the code, please make sure the [$formatTool] is in the PATH and the argument [$formatArgu] is right."
+
 	# step 3, add it to git temporarily.
 	git add "$file"_d
+	check_exit "Couldn't add the temporary file, please contract the [$0]'s author."
+
 	# step 4, get version 2
 	git show $commit2:$file > "$file"_d
+	check_exit "Couldn't get the file in GIT, please check if the file name [$file] or commit [$commit2] is right."
+
 	# step 5, format it.
-	astyle -q "$file"_d
+	$formatTool $formatArgu "$file"_d
+	check_exit "Couldn't format the code, please make sure the [$formatTool] is in the PATH and the argument [$formatArgu] is right."
+
 	# step 6, use git diff
 	git diff "$file"_d
+	check_exit "Couldn't run the git diff, please contract the [$0]'s author."
+
 	# step 7, reset
 	git reset -q "$file"_d
-	# remove the temp file
+	check_exit "Couldn't run the git reset, please contract the [$0]'s author."
+
+	# step 8, remove the temporary file
 	rm "$file"_d
+	check_exit "Couldn't remove the temporary file, please contract the [$0]'s author."
 else
 	echo "Usage gitfdiff <commit> [commit] file"
 fi
