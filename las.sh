@@ -3,7 +3,26 @@
 # This script used to list all suffixes in the folder
 # $1 The folder to search.
 
-find "$1" -type f | awk ' 
+# if [ $# -eq 0 ]; then
+# 	dir=.
+# else
+# 	dir=$1
+# fi
+
+dir=.
+noSuffix=false
+while [ $# -gt 0 ]
+do
+	if [ $1 == "-n" ]; then
+		noSuffix=true
+		shift
+	else
+    	dir=$1
+	    shift
+	fi
+done
+
+find "$dir" -type f | awk -v ns=$noSuffix ' 
 BEGIN {
 	maxSuffixLen = 0;
 	maxLenLen = 0;
@@ -39,10 +58,14 @@ BEGIN {
 	}
 }
 END {
+	# Sort suffix firstly
+	asorti(suffixMap, suffixList)
 	print "Files type statistics:"
 	format = "%-" maxSuffixLen + 1 "s:%" maxLenLen + 1 "d\n"
-	for (k in suffixMap)
-		printf format, k, suffixMap[k];
-	print "\nFiles without suffix:"
-	print noSuffix
+	for (s in suffixList)
+		printf format, suffixList[s], suffixMap[suffixList[s]];
+	if (ns != "true") {
+		print "\nFiles without suffix:"
+		print noSuffix
+	}
 }'
