@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "============= Fast Download ============"
+
 # $1 URL of the download file.
 
 curlResult=`curl -sI "$1" | awk '
@@ -18,12 +20,21 @@ END {
 dlSize=`echo $curlResult | awk '{print $1}'`
 fileName=`echo $curlResult | awk '{print $2}'`
 
-echo $fileName
-exit 0
-
 # Use '/' as the separator, print the last part of the URL, it should be the file name.
 if [[ "$fileName"x = ""x ]]; then
 	fileName=`echo $1 | awk -F/ '{print $NF}'`
+fi
+
+echo "File name is: "$fileName
+echo "File size is: "$dlSize
+
+if [ -f "$fileName" ]; then
+	fileSize=`stat -f "%z" "$fileName"`
+	if [[ $fileSize -eq $dlSize ]]; then
+		exit 0;
+	else
+		rm "$fileName"
+	fi
 fi
 
 # # Get the file size by send request.
@@ -35,7 +46,9 @@ mkdir $$
 $scriptPath/splitdl.sh 0 $((dlSize - 1)) "$1" "$fileName" 30 $$ &
 
 while [[ ! -f $fileName ]]; do
-	curSize=`find $$ -name "*.tmp" -exec ls -l {} \; | awk '{t+=$5} END {print t}'`
+	curSize=`find $$ -name "*.tmp" -exec ls -l {} 2>/dev/null \; | awk '{t+=$5} END {print t}'`
 	printf "[$(printf %3d $((curSize*100/dlSize)))%%]\r"
 	sleep 1
 done
+
+rm -rf $$
