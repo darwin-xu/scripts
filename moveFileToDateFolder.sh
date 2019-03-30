@@ -14,24 +14,30 @@ BEGIN {
 	# The name for search the date in file.
 	# Index means priority, the lower the index is, the higher the priority is
 	dateName[0] = "Date/Time Original";
-	dateName[1] = "Create Date";
-	dateName[2] = "Creation Date";
+	dateName[1] = "Creation Date";
+	dateName[2] = "Create Date";
 	dateName[3] = "Content Create Date";
 	dateName[4] = "Modify Date";
 	dateName[5] = "Media Create Date";
 	dateName[6] = "Media Modify Date";
 	dateName[7] = "Track Create Date";
 	dateName[8] = "Track Modify Date";
-	matchIndex = 9;
+	dateName[9] = "File Inode Change Date/Time";
+	matchIndex = 10;
 }
 {
 	for (n in dateName) {
 		# If find the "date" in exif info and its priority higher than before match
-		if (n < matchIndex && match($0, dateName[n]) != 0) {
+		if (int(n) < matchIndex && match($0, dateName[n]) != 0) {
 			# Remove the leading part
 			gsub(/^[^:]+: */, "", $0);
-			date = $0;
-			matchIndex = n;
+			year  = substr($0, 1, 4);
+			month = substr($0, 6, 2);
+			day   = substr($0, 9, 2);
+			if (!match(year, "0000") && !match(month, "00") && !match(day, "00")) {
+				date = $0;
+				matchIndex = n;
+			}
 		}
 	}
 }
@@ -45,16 +51,17 @@ END {
 	}
 }'`
 
+sourPath=$(echo $1 | sed s#//*#/#g)
+
 if [[ $dest"x" != "x" ]]; then
 	# Get the filename from whole path
 	filename=`basename "$1"`
 
 	# Compose the destination path and remove the extra slash
-	sourPath=$(echo $1 | sed s#//*#/#g)
 	destPath=$(echo $2/$dest/$filename | sed s#//*#/#g)
 
 	# If the destination path is not the same, then move
-	if [[ sourPath != $destPath ]]; then
+	if [[ $sourPath != $destPath ]]; then
 
 		if [[ $3 = true ]]; then
 			echo "Dry: $sourPath -> $destPath"
@@ -62,6 +69,9 @@ if [[ $dest"x" != "x" ]]; then
 			mkdir -p `dirname $destPath`
 			mv -vn "$sourPath" "$destPath"
 		fi
+	else
+
+		echo "Correct path, skip for: $sourPath"
 
 	fi
 else

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 
 import os
 import shutil
@@ -90,7 +90,7 @@ else:
 
     copyCount, skipCount, rmFileCount, rmDirCount = walk_dir(srcDir, dstDir)
 
-    print
+    print()
     print("Total copied files :", copyCount)
     print("Total skipped files:", skipCount)
     print("Total removed files:", rmFileCount)
