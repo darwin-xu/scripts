@@ -1,4 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
+#!/usr/local/bin/python3
 
 import os
 import subprocess
@@ -35,7 +35,7 @@ def create_tab(host, tab_control):
 
 
 win = tk.Tk()  # Create instance
-p = PhotoImage(file='/Users/darwin/tools/scripts/ping_pong_72px_501075_easyicon.net.png')
+p = PhotoImage(file='dribbble.gif')
 win.tk.call('wm', 'iconphoto', win._w, p)
 win.title("Pinger")  # Add a title
 tabControl = ttk.Notebook(win)  # Create Tab Control
