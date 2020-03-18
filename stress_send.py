@@ -27,6 +27,7 @@ def tcp_send(dst):
             last = now
 
 def udp_send(dst):
+    server_address = (dst, PORT)
     sock = socket.socket(socket.AF_INET,
                          socket.SOCK_DGRAM)
 
