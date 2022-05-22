@@ -1,3 +1,5 @@
-#!/bin/bash
+#!/bin/zsh
 
-ssh -D 7788 tricycle@35.194.248.244
+while true; do
+    ssh -D 0.0.0.0:7788 darwin@35.241.122.204
+done

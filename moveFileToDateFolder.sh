@@ -67,12 +67,21 @@ if [[ $dest"x" != "x" ]]; then
 			echo "Dry: $sourPath -> $destPath"
 		else
 			mkdir -p `dirname $destPath`
-			mv -vn "$sourPath" "$destPath"
+			if [[ -f "$destPath" ]]; then
+				a=`md5 -q "$sourPath"`
+				b=`md5 -q "$destPath"`
+				if [[ $a = $b ]]; then
+					#bash -c 'echo "$sourPath"'
+					x=$sourPath bash -c 'rm -v "$x"'
+				else
+					echo "$sourPath is different"
+				fi
+			else
+				mv -vn "$sourPath" "$destPath"
+			fi
 		fi
 	else
-
 		echo "Correct path, skip for: $sourPath"
-
 	fi
 else
 	echo "Could not determine the path for $sourPath"

@@ -26,7 +26,7 @@ def tcp_recv():
                 now = time.time()
                 size += len(data)
                 if (now - last >= 1):
-                    print(f'{size:,}')
+                    print(f'{size:,} Bps, {size*8:,} bps')
                     size = 0
                     last = now
 
@@ -45,7 +45,7 @@ def udp_recv():
         now = time.time()
         size += len(data)
         if (now - last >= 1):
-            print(f'{size:,}')
+            print(f'{size:,} Bps, {size*8:,} bps')
             size = 0
             last = now
 

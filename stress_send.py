@@ -22,7 +22,7 @@ def tcp_send(dst):
         now = time.time()
         size += len(MESSAGE)
         if (now - last >= 1):
-            print(f'{size:,}')
+            print(f'{size:,} Bps, {size*8:,} bps')
             size = 0
             last = now
 
@@ -39,7 +39,7 @@ def udp_send(dst):
         now = time.time()
         size += len(MESSAGE)
         if (now - last >= 1):
-            print(f'{size:,}')
+            print(f'{size:,} Bps, {size*8:,} bps')
             size = 0
             last = now
 
