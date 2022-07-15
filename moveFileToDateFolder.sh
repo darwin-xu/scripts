@@ -28,7 +28,7 @@ BEGIN {
 {
 	for (n in dateName) {
 		# If find the "date" in exif info and its priority higher than before match
-		if (int(n) < matchIndex && match($0, dateName[n]) != 0) {
+		if (int(n) < matchIndex && match($0, dateName[n]) == 1) {
 			# Remove the leading part
 			gsub(/^[^:]+: */, "", $0);
 			year  = substr($0, 1, 4);

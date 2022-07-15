@@ -11,10 +11,10 @@ while true; do
 
     pingtime=`date +%s`
     #ping -s 8000 -c 1 -t 1 192.168.100.129 2>&1 1> /dev/null
-    ping -s 8000 -c 1 -t 1 192.168.2.1 2>&1 1> /dev/null
+    ping -s 8000 -c 1 -t 1 $1 2>&1 1> /dev/null
 
     if [ "$?" != 0 ]; then
-        #osascript -e 'display notification "又乒不到路由器了" with title "嗨"'
+        #osascript -e 'display notification "又ping不到路由器了" with title "嗨"'
         (( badCount = $badCount + 1 ))
         if [ "$lastResult" = 1 ]; then
             start=$pingtime

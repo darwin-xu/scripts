@@ -5,6 +5,5 @@ while true; do
     if [ "$?" = 0 ]; then
         exit
     fi
-    echo "---------------------------"
     echo "-------- Try again --------"
 done
