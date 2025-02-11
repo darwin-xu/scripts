@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script used to remove empty folders.
+# This script used to move media files into sorted folders.
 # $1 The source folder to search
 # $2 The destination folder to move to
 # $3 The filter
