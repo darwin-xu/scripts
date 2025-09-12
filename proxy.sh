@@ -1,0 +1,2 @@
+export HTTP_PROXY=http://192.168.2.127:8899
+export HTTPS_PROXY=http://192.168.2.127:8899

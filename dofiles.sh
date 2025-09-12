@@ -33,7 +33,7 @@ if [[ $sour"x" != "x" ]]; then
 	fi
 
 	if [[ $filter"x" != "x" ]]; then
-		find -E "$sour" -iregex $filter -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
+		find -E "$sour" -regex $filter -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
 	else
 		find "$sour" -type f -exec $scriptPath/moveFileToDateFolder.sh {} "$dest" $dry \;
 	fi

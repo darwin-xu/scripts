@@ -9,7 +9,7 @@
 # If all the timestamp is the same, use it.
 # Or if the timestamp is not the same, use the one with timezone.
 
-dest=`exiftool "$1" | awk '
+dest=`exiftool "$1" | grep Date | awk '
 BEGIN {
 	# The name for search the date in file.
 	# Index means priority, the lower the index is, the higher the priority is

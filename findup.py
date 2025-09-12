@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 
 def find_duplicates(directory):
@@ -16,10 +18,13 @@ def find_duplicates(directory):
             # If this combination has already been seen, it's a duplicate
             if file_key in file_info:
                 duplicates.append(file_path)
+                file_info[file_key].append(file_path)
             else:
-                file_info[file_key] = file_path
+                file_path_list = []
+                file_path_list.append(file_path)
+                file_info[file_key] = file_path_list
 
-    return duplicates
+    return duplicates, file_info
 
 def remove_files(file_list):
     for file_path in file_list:
@@ -36,12 +41,18 @@ def main():
         print("The provided path is not a valid directory.")
         return
     
-    duplicates = find_duplicates(directory)
+    duplicates, file_info = find_duplicates(directory)
     
     if not duplicates:
         print("No duplicate files found.")
     else:
         print(f"Found {len(duplicates)} duplicate(s).")
+
+        # Print the details of the duplicate files
+        # for file in file_info.keys():
+        #     if len(file_info[file]) > 1:
+        #         print(f"Duplicate files for {file[0]}: {file_info[file]}")
+
         remove_confirmation = input("Do you want to remove these duplicates? (yes/no): ").strip().lower()
         
         if remove_confirmation == 'yes':
