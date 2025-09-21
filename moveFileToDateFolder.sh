@@ -71,10 +71,10 @@ if [[ $dest"x" != "x" ]]; then
 				a=`md5 -q "$sourPath"`
 				b=`md5 -q "$destPath"`
 				if [[ $a = $b ]]; then
-					#bash -c 'echo "$sourPath"'
+					echo "Remove the duplicate file $sourPath"
 					x=$sourPath bash -c 'rm -v "$x"'
 				else
-					echo "$sourPath is different"
+					echo "$sourPath is different than $destPath"
 				fi
 			else
 				mv -vn "$sourPath" "$destPath"
