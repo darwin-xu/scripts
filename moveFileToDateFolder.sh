@@ -75,6 +75,7 @@ if [[ $dest"x" != "x" ]]; then
 		baseName=${filename%.*}
 		baseNameLower=`printf '%s' "$baseName" | tr '[:upper:]' '[:lower:]'`
 		imageFound=false
+		matchedImage=""
 		if [[ -d "$destDir" ]]; then
 			while IFS= read -r imageFile; do
 				imageFilename=`basename "$imageFile"`
@@ -82,6 +83,7 @@ if [[ $dest"x" != "x" ]]; then
 				imageBaseLower=`printf '%s' "$imageBase" | tr '[:upper:]' '[:lower:]'`
 				if [[ "$imageBaseLower" = "$baseNameLower" ]]; then
 					imageFound=true
+					matchedImage="$imageFile"
 					break
 				fi
 			done < <(find "$destDir" -maxdepth 1 -type f \( -iname "*.heic" -o -iname "*.jpg" -o -iname "*.jpeg" \))
@@ -89,6 +91,26 @@ if [[ $dest"x" != "x" ]]; then
 
 		if [[ $imageFound = false ]]; then
 			echo "Warning: Skip moving $sourPath; no corresponding image found in $destDir."
+			exit 0
+		fi
+
+		# Aspect ratio check: ensure source file and matched image share same aspect ratio
+		srcDim=$(exiftool -s -s -s -ImageSize "$sourPath" 2>/dev/null)
+		imgDim=$(exiftool -s -s -s -ImageSize "$matchedImage" 2>/dev/null)
+		if [[ -z "$srcDim" || -z "$imgDim" ]]; then
+			echo "Warning: Skip moving $sourPath; could not determine dimensions (src:'$srcDim' img:'$imgDim')."
+			exit 0
+		fi
+		IFS=x read -r srcW srcH <<< "$srcDim"
+		IFS=x read -r imgW imgH <<< "$imgDim"
+		# Validate numeric
+		if ! [[ $srcW =~ ^[0-9]+$ && $srcH =~ ^[0-9]+$ && $imgW =~ ^[0-9]+$ && $imgH =~ ^[0-9]+$ ]]; then
+			echo "Warning: Skip moving $sourPath; invalid dimension values (src:$srcDim img:$imgDim)."
+			exit 0
+		fi
+		# Compare aspect ratios via cross multiplication to avoid floating point
+		if (( srcW * imgH != imgW * srcH )); then
+			echo "Warning: Skip moving $sourPath; aspect ratio mismatch (src:${srcW}x${srcH} vs img:${imgW}x${imgH})."
 			exit 0
 		fi
 	fi
