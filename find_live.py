@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
 """
-List iPhone Live Photo videos by tag only (no duration/aspect heuristics),
-or list non-live videos when requested.
+List MOV files shorter than a given duration.
 
 Requires:
-  - exiftool (https://exiftool.org) available on PATH
+    - exiftool (https://exiftool.org) available on PATH
 
 Usage:
-  python find_live_or_not.py [--live] <directory>
+    python find_live.py [--max-seconds 3] <directory>
 
 Behavior:
-  - With --live: print absolute paths of .MOV files that have Keys:LivePhotoAuto == 1.
-  - Without --live: print absolute paths of .MOV files that DO NOT have Keys:LivePhotoAuto == 1.
+        - Recursively search for .mov / .MOV files beneath the directory.
+        - Print paths of files whose duration is less than the max seconds.
+
+The default max duration is 3 seconds.
 """
 
 import argparse
@@ -29,25 +30,13 @@ def ensure_exiftool_available() -> None:
         sys.exit(2)
 
 
-def find_videos_by_live_tag(directory: str, live: bool) -> List[str]:
-    """Return a list of MOV file paths under 'directory' filtered by LivePhoto tag.
-
-    Uses a single exiftool call with a filter expression:
-      -r                        recurse
-      -ext mov / -ext MOV      match QuickTime movie files
-      -if <expr>               where <expr> depends on 'live'
-      -p $FilePath             print the full file path only
-    """
+def find_short_videos(directory: str, max_seconds: float) -> List[str]:
+    """Return MOV file paths shorter than ``max_seconds`` under ``directory``."""
 
     directory = os.path.abspath(directory)
 
-    if live:
-        # Live when Keys:LivePhotoAuto is defined and equals 1
-        filter_expr = "defined $Keys:LivePhotoAuto and $Keys:LivePhotoAuto eq 1"
-    else:
-        # Non-live when either undefined or not equal to 1
-        # In exiftool, 'not(...)' and 'or' can be used. We ensure files exist either way.
-        filter_expr = "not (defined $Keys:LivePhotoAuto and $Keys:LivePhotoAuto eq 1)"
+    # Duration# exposes the raw duration value in seconds; guard against missing data.
+    filter_expr = f"defined $Duration# and $Duration# > 0 and $Duration# < {max_seconds}"
 
     cmd = [
         "exiftool",
@@ -80,16 +69,17 @@ def find_videos_by_live_tag(directory: str, live: bool) -> List[str]:
 
 def parse_args(argv: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="List live or non-live iPhone Live Photo videos by tag",
+        description="List MOV files shorter than a specified duration",
     )
     parser.add_argument(
         "directory",
         help="Directory to search recursively",
     )
     parser.add_argument(
-        "--live",
-        action="store_true",
-        help="List live videos (default lists non-live videos)",
+        "--max-seconds",
+        type=float,
+        default=3.0,
+        help="Maximum duration (seconds) for a video to be listed (default: 3)",
     )
     return parser.parse_args(argv[1:])
 
@@ -103,7 +93,7 @@ def main(argv: List[str]) -> int:
 
     ensure_exiftool_available()
 
-    paths = find_videos_by_live_tag(args.directory, live=args.live)
+    paths = find_short_videos(args.directory, max_seconds=args.max_seconds)
     for p in paths:
         print(p)
     return 0
