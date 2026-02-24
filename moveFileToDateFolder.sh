@@ -4,24 +4,22 @@
 # $1 the file need to be moved
 # $2 the destination folder
 # $3 is this the dry run
-# $4 optional -live flag
 
 sourceFile="$1"
 destRoot="$2"
 dry=${3:-false}
 
-live=false
-if [[ ${4:-} = "-live" ]]; then
-	live=true
-elif [[ ${4:-} = "true" ]]; then
-	live=true
-fi
+sourceDir=$(dirname "$sourceFile")
+sourceFilename=`basename "$sourceFile"`
+sourceBase=${sourceFilename%.*}
+sourceExtLower=`printf '%s' "${sourceFilename##*.}" | tr '[:upper:]' '[:lower:]'`
 
 # Use what time stamp?
 # If all the timestamp is the same, use it.
 # Or if the timestamp is not the same, use the one with timezone.
 
-dest=`exiftool "$sourceFile" | grep Date | awk '
+resolve_date_folder() {
+	exiftool "$1" | grep Date | awk '
 BEGIN {
 	# The name for search the date in file.
 	# Index means priority, the lower the index is, the higher the priority is
@@ -61,65 +59,72 @@ END {
 		day   = substr(date, 9, 2);
 		print "/"year"/"year"-"month"/"year"-"month"-"day;
 	}
-}'`
+}'
+}
+
+dest=`resolve_date_folder "$sourceFile"`
 
 sourPath=$(echo "$sourceFile" | sed 's#//*#/#g')
 
+liveTag=""
+
+if [[ $sourceExtLower = "heic" ]]; then
+	movCandidate="$sourceDir/$sourceBase.mov"
+	movSource="$movCandidate"
+	if [[ -f "$movCandidate" ]]; then
+		heicDim=$(exiftool -s -s -s -ImageSize "$sourceFile" 2>/dev/null)
+		movDim=$(exiftool -s -s -s -ImageSize "$movCandidate" 2>/dev/null)
+		if [[ -n "$heicDim" && -n "$movDim" ]]; then
+			IFS=x read -r heicW heicH <<< "$heicDim"
+			IFS=x read -r movW movH <<< "$movDim"
+			if [[ $heicW =~ ^[0-9]+$ && $heicH =~ ^[0-9]+$ && $movW =~ ^[0-9]+$ && $movH =~ ^[0-9]+$ ]]; then
+				if (( heicW * movH == movW * heicH )); then
+					movDuration=$(exiftool -n -s -s -s -Duration "$movCandidate" 2>/dev/null)
+					if [[ $movDuration =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+						if awk -v d="$movDuration" 'BEGIN { exit !(d < 5) }'; then
+							movDest=`resolve_date_folder "$movCandidate"`
+							if [[ "$movDest" = "$dest" ]]; then
+								liveTag=" (live)"
+							else
+								movSource=""
+								echo "Warning: Skip moving $movCandidate; date folder does not match HEIC."
+							fi
+						else
+							movSource=""
+							echo "Warning: Skip moving $movCandidate; duration is ${movDuration}s (must be < 5s)."
+						fi
+					else
+						movSource=""
+						echo "Warning: Skip moving $movCandidate; invalid duration value '$movDuration'."
+					fi
+				else
+					movSource=""
+					echo "Warning: Skip moving $movCandidate; aspect ratio mismatch (HEIC:${heicW}x${heicH} MOV:${movW}x${movH})."
+				fi
+			else
+				movSource=""
+				echo "Warning: Skip moving $movCandidate; invalid dimensions (HEIC:'$heicDim' MOV:'$movDim')."
+			fi
+		else
+			movSource=""
+			echo "Warning: Skip moving $movCandidate; could not determine dimensions (HEIC:'$heicDim' MOV:'$movDim')."
+		fi
+	else
+		movSource=""
+	fi
+fi
+
 if [[ $dest"x" != "x" ]]; then
 	# Get the filename from whole path
-	filename=`basename "$sourceFile"`
+	filename="$sourceFilename"
 	destPath=$(echo "$destRoot/$dest/$filename" | sed 's#//*#/#g')
 	destDir=$(dirname "$destPath")
-
-	if [[ $live = true ]]; then
-		baseName=${filename%.*}
-		baseNameLower=`printf '%s' "$baseName" | tr '[:upper:]' '[:lower:]'`
-		imageFound=false
-		matchedImage=""
-		if [[ -d "$destDir" ]]; then
-			while IFS= read -r imageFile; do
-				imageFilename=`basename "$imageFile"`
-				imageBase=${imageFilename%.*}
-				imageBaseLower=`printf '%s' "$imageBase" | tr '[:upper:]' '[:lower:]'`
-				if [[ "$imageBaseLower" = "$baseNameLower" ]]; then
-					imageFound=true
-					matchedImage="$imageFile"
-					break
-				fi
-			done < <(find "$destDir" -maxdepth 1 -type f \( -iname "*.heic" -o -iname "*.jpg" -o -iname "*.jpeg" \))
-		fi
-
-		if [[ $imageFound = false ]]; then
-			echo "Warning: Skip moving $sourPath; no corresponding image found in $destDir."
-			exit 0
-		fi
-
-		# Aspect ratio check: ensure source file and matched image share same aspect ratio
-		srcDim=$(exiftool -s -s -s -ImageSize "$sourPath" 2>/dev/null)
-		imgDim=$(exiftool -s -s -s -ImageSize "$matchedImage" 2>/dev/null)
-		if [[ -z "$srcDim" || -z "$imgDim" ]]; then
-			echo "Warning: Skip moving $sourPath; could not determine dimensions (src:'$srcDim' img:'$imgDim')."
-			exit 0
-		fi
-		IFS=x read -r srcW srcH <<< "$srcDim"
-		IFS=x read -r imgW imgH <<< "$imgDim"
-		# Validate numeric
-		if ! [[ $srcW =~ ^[0-9]+$ && $srcH =~ ^[0-9]+$ && $imgW =~ ^[0-9]+$ && $imgH =~ ^[0-9]+$ ]]; then
-			echo "Warning: Skip moving $sourPath; invalid dimension values (src:$srcDim img:$imgDim)."
-			exit 0
-		fi
-		# Compare aspect ratios via cross multiplication to avoid floating point
-		if (( srcW * imgH != imgW * srcH )); then
-			echo "Warning: Skip moving $sourPath; aspect ratio mismatch (src:${srcW}x${srcH} vs img:${imgW}x${imgH})."
-			exit 0
-		fi
-	fi
 
 	# If the destination path is not the same, then move
 	if [[ $sourPath != $destPath ]]; then
 
 		if [[ $dry = true ]]; then
-			echo "Dry: $sourPath -> $destPath"
+			echo "Dry: $sourPath -> $destPath$liveTag"
 		else
 			mkdir -p "$destDir"
 			if [[ -f "$destPath" ]]; then
@@ -132,11 +137,16 @@ if [[ $dest"x" != "x" ]]; then
 					echo "$sourPath is different than $destPath"
 				fi
 			else
+				echo "$sourPath -> $destPath$liveTag"
 				mv -vn "$sourPath" "$destPath"
 			fi
 		fi
 	else
 		echo "Correct path, skip for: $sourPath"
+	fi
+
+	if [[ $sourceExtLower = "heic" && "$movSource" != "" ]]; then
+		"$0" "$movSource" "$destRoot" "$dry"
 	fi
 else
 	echo "Could not determine the path for $sourPath"
