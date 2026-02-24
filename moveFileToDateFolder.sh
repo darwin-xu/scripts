@@ -138,7 +138,7 @@ if [[ $dest"x" != "x" ]]; then
 				fi
 			else
 				echo "$sourPath -> $destPath$liveTag"
-				mv -vn "$sourPath" "$destPath"
+				mv -n "$sourPath" "$destPath"
 			fi
 		fi
 	else
