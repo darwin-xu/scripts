@@ -1,0 +1,24 @@
+#!/bin/bash
+
+TARGET_HOUR=$1
+
+now=$(date +%s)
+target=$(date -j -f "%H:%M" "$TARGET_HOUR:00" +%s)
+
+# if already past today, use tomorrow
+if [ $now -ge $target ]; then
+  target=$(date -v+1d -j -f "%H:%M" "$TARGET_HOUR:00" +%s)
+fi
+
+seconds=$((target - now))
+
+# format target time as 12-hour HH:MM with AM/PM for display (local time)
+target_hm=$(date -r $target +"%I:%M %p")
+
+# convert seconds to H:MM for human-friendly duration
+hours=$((seconds / 3600))
+minutes=$(((seconds % 3600) / 60))
+duration_hm=$(printf "%d:%02d" "$hours" "$minutes")
+
+echo "Caffeinate until $target_hm ($duration_hm hours, $seconds seconds)"
+caffeinate -d -t $seconds
