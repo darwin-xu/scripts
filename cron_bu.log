@@ -1,0 +1,98 @@
+Wed Mar 25 03:00:00 CST 2026
+==> Updating Homebrew...
+Updated 2 taps (homebrew/core and homebrew/cask).
+==> New Formulae
+et: Remote terminal with IP roaming
+icestorm: Tools for analyzing and creating Lattice iCE40 FPGA bitstream files
+pipewire-gstreamer: GStreamer Plugin for PipeWire
+wireplumber: Session / policy manager implementation for PipeWire
+==> Outdated Formulae
+ada-url
+freetype
+frei0r
+hdf5
+openblas
+pango
+svt-av1
+
+You have 7 outdated formulae installed.
+You can upgrade them with brew upgrade
+or list them with brew outdated.
+==> Upgrading 7 outdated packages:
+frei0r 2.5.5 -> 2.5.6
+freetype 2.14.2 -> 2.14.3
+hdf5 2.1.0 -> 2.1.1
+pango 1.57.0_2 -> 1.57.1
+svt-av1 4.0.1 -> 4.1.0
+openblas 0.3.31_1 -> 0.3.32
+ada-url 3.4.3 -> 3.4.4
+==> Fetching downloads for: openblas, frei0r, freetype, hdf5, pango, svt-av1 and ada-url
+✔︎ Bottle pango (1.57.1)
+✔︎ Bottle frei0r (2.5.6)
+✔︎ Bottle svt-av1 (4.1.0)
+✔︎ Bottle ada-url (3.4.4)
+✔︎ Bottle openblas (0.3.32)
+✔︎ Bottle freetype (2.14.3)
+✔︎ Bottle hdf5 (2.1.1)
+==> Upgrading openblas
+  0.3.31_1 -> 0.3.32 
+==> Pouring openblas--0.3.32.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/openblas/0.3.32: 29 files, 55.5MB
+==> Running `brew cleanup openblas`...
+Disable this behaviour by setting `HOMEBREW_NO_INSTALL_CLEANUP=1`.
+Hide these hints with `HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
+Removing: /opt/homebrew/Cellar/openblas/0.3.31_1... (29 files, 55.5MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/openblas_bottle_manifest--0.3.31_1... (15.5KB)
+Removing: /Users/darwin/Library/Caches/Homebrew/openblas--0.3.31_1... (16.8MB)
+==> Upgrading frei0r
+  2.5.5 -> 2.5.6 
+==> Pouring frei0r--2.5.6.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/frei0r/2.5.6: 165 files, 6.0MB
+==> Running `brew cleanup frei0r`...
+Removing: /opt/homebrew/Cellar/frei0r/2.5.5... (165 files, 6.0MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/frei0r_bottle_manifest--2.5.5... (7.4KB)
+Removing: /Users/darwin/Library/Caches/Homebrew/frei0r--2.5.5... (691.1KB)
+==> Upgrading freetype
+  2.14.2 -> 2.14.3 
+==> Pouring freetype--2.14.3.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/freetype/2.14.3: 68 files, 2.7MB
+==> Running `brew cleanup freetype`...
+Removing: /opt/homebrew/Cellar/freetype/2.14.2... (68 files, 2.7MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/freetype_bottle_manifest--2.14.2... (9.2KB)
+Removing: /Users/darwin/Library/Caches/Homebrew/freetype--2.14.2... (994.4KB)
+==> Upgrading hdf5
+  2.1.0 -> 2.1.1 
+==> Pouring hdf5--2.1.1.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/hdf5/2.1.1: 271 files, 25.0MB
+==> Running `brew cleanup hdf5`...
+Removing: /opt/homebrew/Cellar/hdf5/2.1.0... (271 files, 25.0MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/hdf5_bottle_manifest--2.1.0... (19.2KB)
+Removing: /Users/darwin/Library/Caches/Homebrew/hdf5--2.1.0... (10.0MB)
+==> Upgrading pango
+  1.57.0_2 -> 1.57.1 
+==> Pouring pango--1.57.1.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/pango/1.57.1: 69 files, 3.8MB
+==> Running `brew cleanup pango`...
+Removing: /opt/homebrew/Cellar/pango/1.57.0_2... (69 files, 3.8MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/pango_bottle_manifest--1.57.0_2... (33.2KB)
+Removing: /Users/darwin/Library/Caches/Homebrew/pango--1.57.0_2... (887.0KB)
+==> Upgrading svt-av1
+  4.0.1 -> 4.1.0 
+==> Pouring svt-av1--4.1.0.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/svt-av1/4.1.0: 23 files, 3.1MB
+==> Running `brew cleanup svt-av1`...
+Removing: /opt/homebrew/Cellar/svt-av1/4.0.1... (23 files, 3MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/svt-av1_bottle_manifest--4.0.1... (7.7KB)
+Removing: /Users/darwin/Library/Caches/Homebrew/svt-av1--4.0.1... (1.3MB)
+==> Upgrading ada-url
+  3.4.3 -> 3.4.4 
+==> Pouring ada-url--3.4.4.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/ada-url/3.4.4: 55 files, 1.3MB
+==> Running `brew cleanup ada-url`...
+Removing: /opt/homebrew/Cellar/ada-url/3.4.3... (55 files, 1.3MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/ada-url_bottle_manifest--3.4.3... (8.5KB)
+Removing: /Users/darwin/Library/Caches/Homebrew/ada-url--3.4.3... (344.4KB)
+Warning: Skipping sqlite: most recent version 3.51.3 not installed
+Removing: /Users/darwin/Library/Caches/Homebrew/portable-ruby-4.0.1.arm64_big_sur.bottle.tar.gz... (12.5MB)
+Removing: /Users/darwin/Library/Caches/Homebrew/bootsnap/d5cd286ef4797f0335745a777e53aa167a06cf0ec824323c181c4d7011cac37d... (670 files, 6.3MB)
+==> This operation has freed approximately 18.8MB of disk space.
